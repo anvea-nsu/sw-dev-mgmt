@@ -1,0 +1,51 @@
+services:
+  fastapi:
+    build: ./fastapi
+    container_name: fastapi
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    depends_on:
+      - fastapi
+    networks:
+      - app-net
+
+  postgres:
+    build: ./postgres-docker
+    container_name: postgres-lab
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./work/pgsql:/backup
+    networks:
+      - app-net
+
+  dind:
+    image: docker:dind
+    container_name: dind-lab
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""   # отключаем TLS для простоты
+    ports:
+      - "2375:2375"
+    networks:
+      - app-net
+
+volumes:
+  pgdata:
+
+networks:
+  app-net:
+    driver: bridge
