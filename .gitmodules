@@ -1,0 +1,4 @@
+[submodule "projects/freelanseek"]
+	path = projects/freelanseek
+	url = https://github.com/anvea-nsu/freelanseek.git
+	branch = main
